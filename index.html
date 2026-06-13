@@ -307,92 +307,87 @@
 
 <script>
 // ══════════════════════════════════════════════
-//  STATIC FALLBACK DATA
-//  Shown if live fetch fails. Update manually.
+//  LEADERBOARD DATA
+//  Source: PGA Tour — RBC Canadian Open 2026, R2
+//  Update this block when a new round completes.
+//  Scores are total-to-par. Flag is emoji flag.
 // ══════════════════════════════════════════════
-const FALLBACK_EVENT = {
+const EVENT = {
   name:   "RBC Canadian Open",
   venue:  "TPC Toronto at Osprey Valley · Caledon, ON",
   round:  "R2",
   status: "In Progress",
+  dates:  "Jun 11–14, 2026",
 };
 
-const FALLBACK_PLAYERS = [
-  { pos:"1",   flag:"🇺🇸", name:"Ben James",         score:"\u221210", round:"\u22127", r1:"67", r2:"63" },
-  { pos:"T2",  flag:"🇺🇸", name:"Sam Burns",         score:"\u22129",  round:"\u22123", r1:"64", r2:"67" },
-  { pos:"T2",  flag:"🇨🇳", name:"Haotong Li",        score:"\u22129",  round:"\u22126", r1:"67", r2:"64" },
-  { pos:"T2",  flag:"🇸🇪", name:"Jesper Svensson",   score:"\u22129",  round:"\u22125", r1:"66", r2:"65" },
-  { pos:"T2",  flag:"🇺🇸", name:"Jackson Suber",     score:"\u22129",  round:"\u22125", r1:"66", r2:"65" },
-  { pos:"T6",  flag:"🇳🇿", name:"Ryan Fox",          score:"\u22128",  round:"\u22124", r1:"66", r2:"66" },
-  { pos:"T6",  flag:"🇺🇸", name:"Brooks Koepka",     score:"\u22128",  round:"\u22122", r1:"64", r2:"68" },
-  { pos:"T6",  flag:"🇺🇸", name:"Keith Mitchell",    score:"\u22128",  round:"\u22125", r1:"67", r2:"\u2014" },
-  { pos:"T6",  flag:"🇺🇸", name:"Brice Garnett",     score:"\u22128",  round:"\u22123", r1:"65", r2:"\u2014" },
-  { pos:"T10", flag:"🇦🇷", name:"Emiliano Grillo",   score:"\u22127",  round:"\u22121", r1:"64", r2:"69" },
-  { pos:"T10", flag:"🇿🇦", name:"Aldrich Potgieter", score:"\u22127",  round:"\u22123", r1:"66", r2:"67" },
-  { pos:"T10", flag:"🇬🇧", name:"Harry Hall",        score:"\u22127",  round:"\u22124", r1:"67", r2:"66" },
-  { pos:"T10", flag:"🇺🇸", name:"Keegan Bradley",    score:"\u22127",  round:"\u22123", r1:"66", r2:"67" },
-  { pos:"T10", flag:"🇺🇸", name:"Davis Riley",       score:"\u22127",  round:"\u22125", r1:"68", r2:"65" },
-  { pos:"T15", flag:"🇺🇸", name:"Wyndham Clark",     score:"\u22126",  round:"\u22122", r1:"66", r2:"68" },
-  { pos:"T15", flag:"🇺🇸", name:"Russell Henley",    score:"\u22126",  round:"\u22124", r1:"68", r2:"66" },
-  { pos:"T15", flag:"🇨🇦", name:"Corey Conners",     score:"\u22126",  round:"\u22123", r1:"67", r2:"67" },
-  { pos:"T15", flag:"🇺🇸", name:"Andrew Novak",      score:"\u22126",  round:"\u22124", r1:"68", r2:"66" },
-  { pos:"T15", flag:"🇺🇸", name:"Max Greyserman",    score:"\u22126",  round:"\u22122", r1:"66", r2:"68" },
-  { pos:"T20", flag:"🇯🇵", name:"Hideki Matsuyama",  score:"\u22125",  round:"\u22121", r1:"66", r2:"69" },
-  { pos:"T20", flag:"🇺🇸", name:"Justin Thomas",     score:"\u22125",  round:"\u22123", r1:"68", r2:"67" },
-  { pos:"T20", flag:"🇸🇰", name:"Rory Sabbatini",    score:"\u22125",  round:"\u22122", r1:"67", r2:"68" },
-  { pos:"T20", flag:"🇺🇸", name:"Patrick Cantlay",   score:"\u22125",  round:"\u22122", r1:"67", r2:"68" },
-  { pos:"T20", flag:"🇳🇴", name:"Viktor Hovland",    score:"\u22125",  round:"\u22121", r1:"66", r2:"69" },
-  { pos:"T25", flag:"🇺🇸", name:"Xander Schauffele", score:"\u22124",  round:"E",       r1:"66", r2:"70" },
-  { pos:"T25", flag:"🇺🇸", name:"Jordan Spieth",     score:"\u22124",  round:"\u22122", r1:"68", r2:"68" },
-  { pos:"T25", flag:"🇦🇺", name:"Adam Scott",        score:"\u22124",  round:"\u22121", r1:"67", r2:"69" },
-  { pos:"T25", flag:"🇮🇪", name:"Shane Lowry",       score:"\u22124",  round:"\u22122", r1:"68", r2:"68" },
-  { pos:"T25", flag:"🇺🇸", name:"Scottie Scheffler", score:"\u22124",  round:"+1",      r1:"65", r2:"71" },
-  { pos:"T30", flag:"🇺🇸", name:"Collin Morikawa",   score:"\u22123",  round:"E",       r1:"67", r2:"70" },
+// score: total to par string  ("−10", "+2", "E")
+// round: today's round score string
+// r1, r2: stroke totals per round (or "—" if not yet played)
+// flag: emoji country flag
+const PLAYERS = [
+  { pos:"1",   flag:"🇺🇸", name:"Ben James",         score:"−10", round:"−7", r1:"67", r2:"63" },
+  { pos:"T2",  flag:"🇺🇸", name:"Sam Burns",         score:"−9",  round:"−3", r1:"64", r2:"67" },
+  { pos:"T2",  flag:"🇨🇳", name:"Haotong Li",        score:"−9",  round:"−6", r1:"67", r2:"64" },
+  { pos:"T2",  flag:"🇸🇪", name:"Jesper Svensson",   score:"−9",  round:"−5", r1:"66", r2:"65" },
+  { pos:"T2",  flag:"🇺🇸", name:"Jackson Suber",     score:"−9",  round:"−5", r1:"66", r2:"65" },
+  { pos:"T6",  flag:"🇳🇿", name:"Ryan Fox",          score:"−8",  round:"−4", r1:"66", r2:"66" },
+  { pos:"T6",  flag:"🇺🇸", name:"Brooks Koepka",     score:"−8",  round:"−2", r1:"64", r2:"68" },
+  { pos:"T6",  flag:"🇺🇸", name:"Keith Mitchell",    score:"−8",  round:"−5", r1:"67", r2:"—"  },
+  { pos:"T6",  flag:"🇺🇸", name:"Brice Garnett",     score:"−8",  round:"−3", r1:"65", r2:"—"  },
+  { pos:"T10", flag:"🇦🇷", name:"Emiliano Grillo",   score:"−7",  round:"−1", r1:"64", r2:"69" },
+  { pos:"T10", flag:"🇿🇦", name:"Aldrich Potgieter", score:"−7",  round:"−3", r1:"66", r2:"67" },
+  { pos:"T10", flag:"🇬🇧", name:"Harry Hall",        score:"−7",  round:"−4", r1:"67", r2:"66" },
+  { pos:"T10", flag:"🇺🇸", name:"Keegan Bradley",    score:"−7",  round:"−3", r1:"66", r2:"67" },
+  { pos:"T10", flag:"🇺🇸", name:"Davis Riley",       score:"−7",  round:"−5", r1:"68", r2:"65" },
+  { pos:"T15", flag:"🇺🇸", name:"Wyndham Clark",     score:"−6",  round:"−2", r1:"66", r2:"68" },
+  { pos:"T15", flag:"🇺🇸", name:"Russell Henley",    score:"−6",  round:"−4", r1:"68", r2:"66" },
+  { pos:"T15", flag:"🇨🇦", name:"Corey Conners",     score:"−6",  round:"−3", r1:"67", r2:"67" },
+  { pos:"T15", flag:"🇺🇸", name:"Andrew Novak",      score:"−6",  round:"−4", r1:"68", r2:"66" },
+  { pos:"T15", flag:"🇺🇸", name:"Max Greyserman",    score:"−6",  round:"−2", r1:"66", r2:"68" },
+  { pos:"T20", flag:"🇯🇵", name:"Hideki Matsuyama",  score:"−5",  round:"−1", r1:"66", r2:"69" },
+  { pos:"T20", flag:"🇺🇸", name:"Justin Thomas",     score:"−5",  round:"−3", r1:"68", r2:"67" },
+  { pos:"T20", flag:"🇸🇰", name:"Rory Sabbatini",    score:"−5",  round:"−2", r1:"67", r2:"68" },
+  { pos:"T20", flag:"🇺🇸", name:"Patrick Cantlay",   score:"−5",  round:"−2", r1:"67", r2:"68" },
+  { pos:"T20", flag:"🇳🇴", name:"Viktor Hovland",    score:"−5",  round:"−1", r1:"66", r2:"69" },
+  { pos:"T25", flag:"🇺🇸", name:"Xander Schauffele", score:"−4",  round:"E",  r1:"66", r2:"70" },
+  { pos:"T25", flag:"🇺🇸", name:"Jordan Spieth",     score:"−4",  round:"−2", r1:"68", r2:"68" },
+  { pos:"T25", flag:"🇦🇺", name:"Adam Scott",        score:"−4",  round:"−1", r1:"67", r2:"69" },
+  { pos:"T25", flag:"🇮🇪", name:"Shane Lowry",       score:"−4",  round:"−2", r1:"68", r2:"68" },
+  { pos:"T25", flag:"🇺🇸", name:"Scottie Scheffler", score:"−4",  round:"+1", r1:"65", r2:"71" },
+  { pos:"T30", flag:"🇺🇸", name:"Collin Morikawa",   score:"−3",  round:"E",  r1:"67", r2:"70" },
 ];
 
-// Country code to emoji flag
-const FLAG_MAP = {
-  USA:"🇺🇸", CAN:"🇨🇦", ENG:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", SCO:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", WAL:"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
-  IRL:"🇮🇪", AUS:"🇦🇺", NZL:"🇳🇿", RSA:"🇿🇦", ZAF:"🇿🇦",
-  JPN:"🇯🇵", KOR:"🇰🇷", CHN:"🇨🇳", SWE:"🇸🇪", NOR:"🇳🇴",
-  ESP:"🇪🇸", GER:"🇩🇪", FRA:"🇫🇷", ITA:"🇮🇹", BEL:"🇧🇪",
-  ARG:"🇦🇷", CHI:"🇨🇱", COL:"🇨🇴", MEX:"🇲🇽", FIJ:"🇫🇯",
-  THA:"🇹🇭", TPE:"🇹🇼", IND:"🇮🇳",
-};
-function countryFlag(code) { return FLAG_MAP[code] || "🏌️"; }
-
-function formatScore(s) {
-  if (!s || s === "E" || s === "0") return "E";
-  const n = parseInt(s, 10);
-  if (isNaN(n)) return s;
-  return n < 0 ? "\u2212" + Math.abs(n) : "+" + n;
-}
-
-// Score CSS class
+// ── Score color helper ──
 function scoreClass(s) {
-  if (!s || s === "E" || s === "\u2014") return "score-even";
-  return s.startsWith("\u2212") ? "score-under" : "score-over";
+  if (!s || s === "—" || s === "E") return "score-even";
+  return s.startsWith("−") ? "score-under" : "score-over";
 }
 
-// Position CSS class
+// ── Position accent class ──
 function posClass(pos) {
-  if (pos === "1")                     return "p1";
-  if (pos === "T2" || pos === "2")     return "p2";
-  if (pos === "T3" || pos === "3")     return "p3";
+  if (pos === "1")  return "p1";
+  if (pos === "T2" || pos === "2") return "p2";
+  if (pos === "T3" || pos === "3") return "p3";
   return "";
 }
 
-// Build the scroll track
-function buildRows(event, players) {
-  document.getElementById("event-name").textContent  = event.name;
-  document.getElementById("event-venue").textContent = event.venue;
-  document.getElementById("round-label").textContent = event.round;
-  document.getElementById("status-text").textContent = event.status;
+// ── Thru display ──
+function thruClass(t) {
+  return (t === "F" || t === "F*") ? "thru-f" : "";
+}
 
+// ── Build DOM ──
+function buildRows() {
   const track = document.getElementById("track");
 
+  document.getElementById("event-name").textContent  = EVENT.name;
+  document.getElementById("event-venue").textContent = EVENT.venue;
+  document.getElementById("round-label").textContent = EVENT.round;
+  document.getElementById("status-text").textContent = EVENT.status;
+
   function rowHTML(p) {
-    return `<div class="row ${posClass(p.pos)}">
+    const pc = posClass(p.pos);
+    return `<div class="row ${pc}">
       <div class="row-pos">${p.pos}</div>
       <div class="row-flag">${p.flag}</div>
       <div class="row-name">${p.name}</div>
@@ -403,97 +398,35 @@ function buildRows(event, players) {
     </div>`;
   }
 
-  track.innerHTML = players.map(rowHTML).join("") + players.map(rowHTML).join("");
-  document.documentElement.style.setProperty("--scroll-dur", (players.length * 6) + "s");
+  // Double list for seamless loop
+  track.innerHTML = PLAYERS.map(rowHTML).join("") + PLAYERS.map(rowHTML).join("");
 
+  // Speed: ~6s per player
+  const dur = PLAYERS.length * 6;
+  document.documentElement.style.setProperty("--scroll-dur", dur + "s");
+
+  // Timestamp
   const now = new Date();
   document.getElementById("last-updated").textContent =
-    "Updated " + now.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+    "Updated " + now.toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit"});
 }
 
-// Live fetch via CORS proxy
-async function fetchLiveLeaderboard() {
-  const target = encodeURIComponent("https://www.pgatour.com/leaderboard");
-  const resp = await fetch("https://api.allorigins.win/get?url=" + target,
-    { signal: AbortSignal.timeout(8000) });
-  if (!resp.ok) throw new Error("Proxy error " + resp.status);
-  const json = await resp.json();
-  if (!json.contents) throw new Error("Empty response");
+buildRows();
 
-  const doc = new DOMParser().parseFromString(json.contents, "text/html");
-  const text = doc.body.textContent || "";
-
-  // Round indicator
-  const roundMatch = text.match(/\bR(\d)\b/);
-  const round  = roundMatch ? "R" + roundMatch[1] : "—";
-  const status = /in progress/i.test(text) ? "In Progress" : "Final";
-
-  // Event name from first <h3>
-  const h3 = doc.querySelector("h3");
-  const eventName = h3 ? h3.textContent.trim() : FALLBACK_EVENT.name;
-
-  // Parse table rows
-  const players = [];
-  doc.querySelectorAll("tr").forEach(tr => {
-    const cells = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
-    if (cells.length < 5) return;
-    if (!/^(T?\d+|CUT|WD|DQ)$/.test(cells[0])) return;
-    const nameIdx = cells.findIndex((c, i) => i > 0 && /^[A-Z][a-z]/.test(c) && c.length > 3);
-    if (nameIdx < 0) return;
-    const ccCell = cells.find(c => /^[A-Z]{3}$/.test(c));
-    players.push({
-      pos:   cells[0],
-      flag:  countryFlag(ccCell || ""),
-      name:  cells[nameIdx],
-      score: formatScore(cells[nameIdx + 1]),
-      round: formatScore(cells[nameIdx + 2]),
-      r1:    cells[nameIdx + 3] || "\u2014",
-      r2:    cells[nameIdx + 4] || "\u2014",
-    });
-  });
-
-  if (players.length < 5) throw new Error("Only " + players.length + " rows parsed");
-  return { event: { name: eventName, venue: FALLBACK_EVENT.venue, round, status },
-           players: players.slice(0, 30) };
-}
-
-// Init: live first, fallback on failure
-async function init() {
-  try {
-    const data = await fetchLiveLeaderboard();
-    buildRows(data.event, data.players);
-    console.log("[PGA] Live data OK -", data.players.length, "players");
-
-    // Re-fetch every 20 min
-    setInterval(async () => {
-      try {
-        const fresh = await fetchLiveLeaderboard();
-        buildRows(fresh.event, fresh.players);
-      } catch(e) {
-        console.warn("[PGA] Refresh skipped:", e.message);
-      }
-    }, 20 * 60 * 1000);
-
-  } catch(err) {
-    console.warn("[PGA] Live fetch failed, using fallback:", err.message);
-    buildRows(FALLBACK_EVENT, FALLBACK_PLAYERS);
-  }
-}
-
-init();
-
-// Logo swap
+// ── Logo swap ──
 const logoImg = document.getElementById("pga-logo");
 if (logoImg.src && !logoImg.src.endsWith("/")) {
   logoImg.style.display = "block";
   document.getElementById("logo-hint").style.display = "none";
 }
 
-// Daily midnight reload
+// ── Daily refresh at midnight ──
 function scheduleMidnightRefresh() {
   const now = new Date();
-  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
-  setTimeout(() => location.reload(), next - now);
+  const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+  const ms = nextMidnight - now;
+  console.log(`[PGA Leaderboard] Next refresh in ${Math.round(ms/60000)} min`);
+  setTimeout(() => location.reload(), ms);
 }
 scheduleMidnightRefresh();
 </script>
