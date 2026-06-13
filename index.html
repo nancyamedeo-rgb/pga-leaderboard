@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PGA Tour Leaderboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #04160a;
+    --surface:   #0a2614;
+    --border:    #1a4a28;
+    --gold:      #c9a84c;
+    --gold-dim:  #7a6030;
+    --green:     #2e7d32;
+    --green-hi:  #4caf50;
+    --white:     #f0f4f0;
+    --muted:     #7a9e80;
+    --red:       #e57373;
+    --blue:      #6ab0e8;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #071f0d 0%, var(--bg) 100%);
+    flex-shrink: 0;
+  }
+
+  /* Logo placeholder — swap src to your pga_logo.jpg */
+  .logo-wrap {
+    width: 72px; height: 72px;
+    border-radius: 8px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+  .logo-wrap img { width: 100%; height: 100%; object-fit: contain; display: none; }
+  .logo-placeholder-text {
+    font-size: 9px; color: var(--gold-dim);
+    text-align: center; line-height: 1.3; padding: 4px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  .header-text { flex: 1; }
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .header-event {
+    font-size: 0.78rem;
+    color: var(--white);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .header-sub {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-right { text-align: right; flex-shrink: 0; }
+  .header-right .round-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    color: var(--green-hi);
+    line-height: 1;
+  }
+  .header-right .live-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    margin-right: 5px;
+    animation: pulse 1.4s ease-in-out infinite;
+    vertical-align: middle;
+    position: relative; top: -1px;
+  }
+  .header-right .status-line {
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ── COLUMN LABELS ── */
+  .col-labels {
+    display: grid;
+    grid-template-columns: 48px 36px 1fr 54px 54px 54px 54px;
+    gap: 0 10px;
+    padding: 7px 24px 6px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .col-label {
+    font-size: 0.6rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .col-label.center { text-align: center; }
+  .col-label.right  { text-align: right; }
+
+  /* ── SCROLL CONTAINER ── */
+  .scroll-outer {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+  }
+
+  .scroll-track {
+    display: flex;
+    flex-direction: column;
+    animation: scrollUp var(--scroll-dur, 60s) linear infinite;
+  }
+  .scroll-track:hover { animation-play-state: paused; }
+
+  @keyframes scrollUp {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+  }
+
+  /* ── PLAYER ROW ── */
+  .row {
+    display: grid;
+    grid-template-columns: 48px 36px 1fr 54px 54px 54px 54px;
+    gap: 0 10px;
+    align-items: center;
+    padding: 10px 24px;
+    border-bottom: 1px solid #112218;
+    position: relative;
+  }
+
+  /* Top-3 accent */
+  .row.p1 { background: #12280f; }
+  .row.p1::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: var(--gold); }
+  .row.p2::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #aaa; }
+  .row.p3::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #cd7f32; }
+
+  .row-pos {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    color: var(--muted);
+    line-height: 1;
+  }
+  .row.p1 .row-pos { color: var(--gold); }
+  .row.p2 .row-pos { color: #ccc; }
+  .row.p3 .row-pos { color: #cd7f32; }
+
+  .row-flag {
+    font-size: 1.1rem;
+    line-height: 1;
+  }
+
+  .row-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--white);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .row.p1 .row-name { color: #fff; }
+
+  .row-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    text-align: center;
+    line-height: 1;
+  }
+  .score-under { color: var(--red); }
+  .score-over  { color: var(--blue); }
+  .score-even  { color: var(--muted); }
+
+  .row-round {
+    font-size: 0.75rem;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .row-r1, .row-r2 {
+    font-size: 0.72rem;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .row-thru {
+    font-size: 0.68rem;
+    text-align: right;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .thru-f { color: var(--green-hi); font-weight: 700; }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 7px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .footer-note {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .pulse-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    display: inline-block;
+    margin-right: 6px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity:1; transform:scale(1); }
+    50%      { opacity:0.3; transform:scale(0.65); }
+  }
+
+  #last-updated { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="header">
+
+  <!-- 🔧 TO ADD YOUR PGA LOGO:
+       1. Place pga_logo.jpg next to this HTML file
+       2. Set img src="pga_logo.jpg" below
+       3. Remove the logo-placeholder-text div        -->
+  <div class="logo-wrap">
+    <img src="" alt="PGA Tour Logo" id="pga-logo">
+    <div class="logo-placeholder-text" id="logo-hint">PGA<br>LOGO<br>HERE</div>
+  </div>
+
+  <div class="header-text">
+    <div class="header-title">Leaderboard</div>
+    <div class="header-event" id="event-name">RBC Canadian Open</div>
+    <div class="header-sub" id="event-venue">TPC Toronto at Osprey Valley · Caledon, ON</div>
+  </div>
+
+  <div class="header-right">
+    <div class="round-badge" id="round-label">R2</div>
+    <div class="status-line">
+      <span class="live-dot"></span><span id="status-text">In Progress</span>
+    </div>
+    <div id="last-updated" style="margin-top:4px;"></div>
+  </div>
+</header>
+
+<!-- ══════════ COLUMN LABELS ══════════ -->
+<div class="col-labels">
+  <span class="col-label">Pos</span>
+  <span class="col-label"></span>
+  <span class="col-label">Player</span>
+  <span class="col-label center">Total</span>
+  <span class="col-label center">Round</span>
+  <span class="col-label center">R1</span>
+  <span class="col-label center">R2</span>
+</div>
+
+<!-- ══════════ SCROLLING LIST ══════════ -->
+<div class="scroll-outer">
+  <div class="scroll-track" id="track"></div>
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer class="footer">
+  <span class="footer-note"><span class="pulse-dot"></span>Live · Refreshes Daily at Midnight</span>
+  <span class="footer-note">Source: PGA Tour</span>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════
+//  STATIC FALLBACK DATA
+//  Shown if live fetch fails. Update manually.
+// ══════════════════════════════════════════════
+const FALLBACK_EVENT = {
+  name:   "RBC Canadian Open",
+  venue:  "TPC Toronto at Osprey Valley · Caledon, ON",
+  round:  "R2",
+  status: "In Progress",
+};
+
+const FALLBACK_PLAYERS = [
+  { pos:"1",   flag:"🇺🇸", name:"Ben James",         score:"\u221210", round:"\u22127", r1:"67", r2:"63" },
+  { pos:"T2",  flag:"🇺🇸", name:"Sam Burns",         score:"\u22129",  round:"\u22123", r1:"64", r2:"67" },
+  { pos:"T2",  flag:"🇨🇳", name:"Haotong Li",        score:"\u22129",  round:"\u22126", r1:"67", r2:"64" },
+  { pos:"T2",  flag:"🇸🇪", name:"Jesper Svensson",   score:"\u22129",  round:"\u22125", r1:"66", r2:"65" },
+  { pos:"T2",  flag:"🇺🇸", name:"Jackson Suber",     score:"\u22129",  round:"\u22125", r1:"66", r2:"65" },
+  { pos:"T6",  flag:"🇳🇿", name:"Ryan Fox",          score:"\u22128",  round:"\u22124", r1:"66", r2:"66" },
+  { pos:"T6",  flag:"🇺🇸", name:"Brooks Koepka",     score:"\u22128",  round:"\u22122", r1:"64", r2:"68" },
+  { pos:"T6",  flag:"🇺🇸", name:"Keith Mitchell",    score:"\u22128",  round:"\u22125", r1:"67", r2:"\u2014" },
+  { pos:"T6",  flag:"🇺🇸", name:"Brice Garnett",     score:"\u22128",  round:"\u22123", r1:"65", r2:"\u2014" },
+  { pos:"T10", flag:"🇦🇷", name:"Emiliano Grillo",   score:"\u22127",  round:"\u22121", r1:"64", r2:"69" },
+  { pos:"T10", flag:"🇿🇦", name:"Aldrich Potgieter", score:"\u22127",  round:"\u22123", r1:"66", r2:"67" },
+  { pos:"T10", flag:"🇬🇧", name:"Harry Hall",        score:"\u22127",  round:"\u22124", r1:"67", r2:"66" },
+  { pos:"T10", flag:"🇺🇸", name:"Keegan Bradley",    score:"\u22127",  round:"\u22123", r1:"66", r2:"67" },
+  { pos:"T10", flag:"🇺🇸", name:"Davis Riley",       score:"\u22127",  round:"\u22125", r1:"68", r2:"65" },
+  { pos:"T15", flag:"🇺🇸", name:"Wyndham Clark",     score:"\u22126",  round:"\u22122", r1:"66", r2:"68" },
+  { pos:"T15", flag:"🇺🇸", name:"Russell Henley",    score:"\u22126",  round:"\u22124", r1:"68", r2:"66" },
+  { pos:"T15", flag:"🇨🇦", name:"Corey Conners",     score:"\u22126",  round:"\u22123", r1:"67", r2:"67" },
+  { pos:"T15", flag:"🇺🇸", name:"Andrew Novak",      score:"\u22126",  round:"\u22124", r1:"68", r2:"66" },
+  { pos:"T15", flag:"🇺🇸", name:"Max Greyserman",    score:"\u22126",  round:"\u22122", r1:"66", r2:"68" },
+  { pos:"T20", flag:"🇯🇵", name:"Hideki Matsuyama",  score:"\u22125",  round:"\u22121", r1:"66", r2:"69" },
+  { pos:"T20", flag:"🇺🇸", name:"Justin Thomas",     score:"\u22125",  round:"\u22123", r1:"68", r2:"67" },
+  { pos:"T20", flag:"🇸🇰", name:"Rory Sabbatini",    score:"\u22125",  round:"\u22122", r1:"67", r2:"68" },
+  { pos:"T20", flag:"🇺🇸", name:"Patrick Cantlay",   score:"\u22125",  round:"\u22122", r1:"67", r2:"68" },
+  { pos:"T20", flag:"🇳🇴", name:"Viktor Hovland",    score:"\u22125",  round:"\u22121", r1:"66", r2:"69" },
+  { pos:"T25", flag:"🇺🇸", name:"Xander Schauffele", score:"\u22124",  round:"E",       r1:"66", r2:"70" },
+  { pos:"T25", flag:"🇺🇸", name:"Jordan Spieth",     score:"\u22124",  round:"\u22122", r1:"68", r2:"68" },
+  { pos:"T25", flag:"🇦🇺", name:"Adam Scott",        score:"\u22124",  round:"\u22121", r1:"67", r2:"69" },
+  { pos:"T25", flag:"🇮🇪", name:"Shane Lowry",       score:"\u22124",  round:"\u22122", r1:"68", r2:"68" },
+  { pos:"T25", flag:"🇺🇸", name:"Scottie Scheffler", score:"\u22124",  round:"+1",      r1:"65", r2:"71" },
+  { pos:"T30", flag:"🇺🇸", name:"Collin Morikawa",   score:"\u22123",  round:"E",       r1:"67", r2:"70" },
+];
+
+// Country code to emoji flag
+const FLAG_MAP = {
+  USA:"🇺🇸", CAN:"🇨🇦", ENG:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", SCO:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", WAL:"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+  IRL:"🇮🇪", AUS:"🇦🇺", NZL:"🇳🇿", RSA:"🇿🇦", ZAF:"🇿🇦",
+  JPN:"🇯🇵", KOR:"🇰🇷", CHN:"🇨🇳", SWE:"🇸🇪", NOR:"🇳🇴",
+  ESP:"🇪🇸", GER:"🇩🇪", FRA:"🇫🇷", ITA:"🇮🇹", BEL:"🇧🇪",
+  ARG:"🇦🇷", CHI:"🇨🇱", COL:"🇨🇴", MEX:"🇲🇽", FIJ:"🇫🇯",
+  THA:"🇹🇭", TPE:"🇹🇼", IND:"🇮🇳",
+};
+function countryFlag(code) { return FLAG_MAP[code] || "🏌️"; }
+
+function formatScore(s) {
+  if (!s || s === "E" || s === "0") return "E";
+  const n = parseInt(s, 10);
+  if (isNaN(n)) return s;
+  return n < 0 ? "\u2212" + Math.abs(n) : "+" + n;
+}
+
+// Score CSS class
+function scoreClass(s) {
+  if (!s || s === "E" || s === "\u2014") return "score-even";
+  return s.startsWith("\u2212") ? "score-under" : "score-over";
+}
+
+// Position CSS class
+function posClass(pos) {
+  if (pos === "1")                     return "p1";
+  if (pos === "T2" || pos === "2")     return "p2";
+  if (pos === "T3" || pos === "3")     return "p3";
+  return "";
+}
+
+// Build the scroll track
+function buildRows(event, players) {
+  document.getElementById("event-name").textContent  = event.name;
+  document.getElementById("event-venue").textContent = event.venue;
+  document.getElementById("round-label").textContent = event.round;
+  document.getElementById("status-text").textContent = event.status;
+
+  const track = document.getElementById("track");
+
+  function rowHTML(p) {
+    return `<div class="row ${posClass(p.pos)}">
+      <div class="row-pos">${p.pos}</div>
+      <div class="row-flag">${p.flag}</div>
+      <div class="row-name">${p.name}</div>
+      <div class="row-score ${scoreClass(p.score)}">${p.score}</div>
+      <div class="row-round ${scoreClass(p.round)}">${p.round}</div>
+      <div class="row-r1">${p.r1}</div>
+      <div class="row-r2">${p.r2}</div>
+    </div>`;
+  }
+
+  track.innerHTML = players.map(rowHTML).join("") + players.map(rowHTML).join("");
+  document.documentElement.style.setProperty("--scroll-dur", (players.length * 6) + "s");
+
+  const now = new Date();
+  document.getElementById("last-updated").textContent =
+    "Updated " + now.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+}
+
+// Live fetch via CORS proxy
+async function fetchLiveLeaderboard() {
+  const target = encodeURIComponent("https://www.pgatour.com/leaderboard");
+  const resp = await fetch("https://api.allorigins.win/get?url=" + target,
+    { signal: AbortSignal.timeout(8000) });
+  if (!resp.ok) throw new Error("Proxy error " + resp.status);
+  const json = await resp.json();
+  if (!json.contents) throw new Error("Empty response");
+
+  const doc = new DOMParser().parseFromString(json.contents, "text/html");
+  const text = doc.body.textContent || "";
+
+  // Round indicator
+  const roundMatch = text.match(/\bR(\d)\b/);
+  const round  = roundMatch ? "R" + roundMatch[1] : "—";
+  const status = /in progress/i.test(text) ? "In Progress" : "Final";
+
+  // Event name from first <h3>
+  const h3 = doc.querySelector("h3");
+  const eventName = h3 ? h3.textContent.trim() : FALLBACK_EVENT.name;
+
+  // Parse table rows
+  const players = [];
+  doc.querySelectorAll("tr").forEach(tr => {
+    const cells = Array.from(tr.querySelectorAll("td")).map(td => td.textContent.trim());
+    if (cells.length < 5) return;
+    if (!/^(T?\d+|CUT|WD|DQ)$/.test(cells[0])) return;
+    const nameIdx = cells.findIndex((c, i) => i > 0 && /^[A-Z][a-z]/.test(c) && c.length > 3);
+    if (nameIdx < 0) return;
+    const ccCell = cells.find(c => /^[A-Z]{3}$/.test(c));
+    players.push({
+      pos:   cells[0],
+      flag:  countryFlag(ccCell || ""),
+      name:  cells[nameIdx],
+      score: formatScore(cells[nameIdx + 1]),
+      round: formatScore(cells[nameIdx + 2]),
+      r1:    cells[nameIdx + 3] || "\u2014",
+      r2:    cells[nameIdx + 4] || "\u2014",
+    });
+  });
+
+  if (players.length < 5) throw new Error("Only " + players.length + " rows parsed");
+  return { event: { name: eventName, venue: FALLBACK_EVENT.venue, round, status },
+           players: players.slice(0, 30) };
+}
+
+// Init: live first, fallback on failure
+async function init() {
+  try {
+    const data = await fetchLiveLeaderboard();
+    buildRows(data.event, data.players);
+    console.log("[PGA] Live data OK -", data.players.length, "players");
+
+    // Re-fetch every 20 min
+    setInterval(async () => {
+      try {
+        const fresh = await fetchLiveLeaderboard();
+        buildRows(fresh.event, fresh.players);
+      } catch(e) {
+        console.warn("[PGA] Refresh skipped:", e.message);
+      }
+    }, 20 * 60 * 1000);
+
+  } catch(err) {
+    console.warn("[PGA] Live fetch failed, using fallback:", err.message);
+    buildRows(FALLBACK_EVENT, FALLBACK_PLAYERS);
+  }
+}
+
+init();
+
+// Logo swap
+const logoImg = document.getElementById("pga-logo");
+if (logoImg.src && !logoImg.src.endsWith("/")) {
+  logoImg.style.display = "block";
+  document.getElementById("logo-hint").style.display = "none";
+}
+
+// Daily midnight reload
+function scheduleMidnightRefresh() {
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 5);
+  setTimeout(() => location.reload(), next - now);
+}
+scheduleMidnightRefresh();
+</script>
+</body>
+</html>
