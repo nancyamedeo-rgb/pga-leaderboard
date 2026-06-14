@@ -25,7 +25,7 @@
 
   html, body {
     width: 100%; height: 100%;
-    background: var(--bg);
+    background: transparent !important;
     color: var(--white);
     font-family: 'Inter', sans-serif;
     overflow: hidden;
@@ -118,6 +118,7 @@
     padding: 7px 24px 6px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    background: transparent;
   }
   .col-label {
     font-size: 0.6rem;
@@ -157,12 +158,13 @@
     gap: 0 10px;
     align-items: center;
     padding: 10px 24px;
-    border-bottom: 1px solid #112218;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     position: relative;
+    background: transparent;
   }
 
   /* Top-3 accent */
-  .row.p1 { background: #12280f; }
+  .row.p1 { background: rgba(201,168,76,0.08); }
   .row.p1::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: var(--gold); }
   .row.p2::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #aaa; }
   .row.p3::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #cd7f32; }
@@ -231,6 +233,7 @@
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+    background: transparent;
   }
   .footer-note {
     font-size: 0.6rem;
