@@ -38,7 +38,7 @@
     display: flex;
     align-items: center;
     gap: 18px;
-    padding: 16px 24px 12px;
+    padding: 20px 28px 16px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(180deg, #071f0d 0%, var(--bg) 100%);
     flex-shrink: 0;
@@ -46,7 +46,7 @@
 
   /* Logo placeholder — swap src to your pga_logo.jpg */
   .logo-wrap {
-    width: 72px; height: 72px;
+    width: 110px; height: 110px;
     border-radius: 8px;
     border: none;
     display: flex;
@@ -66,19 +66,19 @@
   .header-text { flex: 1; }
   .header-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
+    font-size: 4rem;
     letter-spacing: 0.08em;
     color: var(--gold);
     line-height: 1;
   }
   .header-event {
-    font-size: 0.78rem;
+    font-size: 1.4rem;
     color: var(--white);
     font-weight: 600;
     margin-top: 2px;
   }
   .header-sub {
-    font-size: 0.65rem;
+    font-size: 1.7rem;
     color: var(--muted);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -88,13 +88,13 @@
   .header-right { text-align: right; flex-shrink: 0; }
   .header-right .round-badge {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
+    font-size: 2.8rem;
     color: var(--green-hi);
     line-height: 1;
   }
   .header-right .live-dot {
     display: inline-block;
-    width: 8px; height: 8px;
+    width: 12px; height: 12px;
     border-radius: 50%;
     background: var(--red);
     margin-right: 5px;
@@ -103,7 +103,7 @@
     position: relative; top: -1px;
   }
   .header-right .status-line {
-    font-size: 0.65rem;
+    font-size: 1.7rem;
     color: var(--muted);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -113,15 +113,15 @@
   /* ── COLUMN LABELS ── */
   .col-labels {
     display: grid;
-    grid-template-columns: 48px 36px 1fr 54px 54px 54px 54px;
+    grid-template-columns: 72px 48px 1fr 76px 76px 76px 76px;
     gap: 0 10px;
-    padding: 7px 24px 6px;
+    padding: 10px 28px 8px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
     background: transparent;
   }
   .col-label {
-    font-size: 0.6rem;
+    font-size: 1.05rem;
     color: var(--gold-dim);
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -154,10 +154,10 @@
   /* ── PLAYER ROW ── */
   .row {
     display: grid;
-    grid-template-columns: 48px 36px 1fr 54px 54px 54px 54px;
+    grid-template-columns: 72px 48px 1fr 76px 76px 76px 76px;
     gap: 0 10px;
     align-items: center;
-    padding: 10px 24px;
+    padding: 16px 28px;
     border-bottom: 1px solid rgba(255,255,255,0.06);
     position: relative;
     background: transparent;
@@ -165,13 +165,13 @@
 
   /* Top-3 accent */
   .row.p1 { background: rgba(201,168,76,0.08); }
-  .row.p1::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: var(--gold); }
-  .row.p2::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #aaa; }
-  .row.p3::before { content:''; position:absolute; left:0;top:0;bottom:0; width:3px; background: #cd7f32; }
+  .row.p1::before { content:''; position:absolute; left:0;top:0;bottom:0; width:5px; background: var(--gold); }
+  .row.p2::before { content:''; position:absolute; left:0;top:0;bottom:0; width:5px; background: #aaa; }
+  .row.p3::before { content:''; position:absolute; left:0;top:0;bottom:0; width:5px; background: #cd7f32; }
 
   .row-pos {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.9rem;
     color: var(--muted);
     line-height: 1;
   }
@@ -180,12 +180,12 @@
   .row.p3 .row-pos { color: #cd7f32; }
 
   .row-flag {
-    font-size: 1.1rem;
+    font-size: 1.7rem;
     line-height: 1;
   }
 
   .row-name {
-    font-size: 0.88rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--white);
     white-space: nowrap;
@@ -196,7 +196,7 @@
 
   .row-score {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.15rem;
+    font-size: 1.9rem;
     text-align: center;
     line-height: 1;
   }
@@ -205,20 +205,20 @@
   .score-even  { color: var(--muted); }
 
   .row-round {
-    font-size: 0.75rem;
+    font-size: 1.4rem;
     text-align: center;
     color: var(--muted);
     font-weight: 600;
   }
 
   .row-r1, .row-r2 {
-    font-size: 0.72rem;
+    font-size: 1.3rem;
     text-align: center;
     color: var(--muted);
   }
 
   .row-thru {
-    font-size: 0.68rem;
+    font-size: 1.2rem;
     text-align: right;
     color: var(--muted);
     letter-spacing: 0.04em;
@@ -227,7 +227,7 @@
 
   /* ── FOOTER ── */
   .footer {
-    padding: 7px 24px;
+    padding: 10px 28px;
     border-top: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
@@ -236,13 +236,13 @@
     background: transparent;
   }
   .footer-note {
-    font-size: 0.6rem;
+    font-size: 1.0rem;
     color: var(--muted);
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
   .pulse-dot {
-    width: 7px; height: 7px;
+    width: 11px; height: 11px;
     border-radius: 50%;
     background: var(--red);
     display: inline-block;
@@ -254,7 +254,7 @@
     50%      { opacity:0.3; transform:scale(0.65); }
   }
 
-  #last-updated { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; }
+  #last-updated { font-size: 1.0rem; color: var(--muted); letter-spacing: 0.1em; }
 </style>
 </head>
 <body>
